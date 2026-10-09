@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#030014">
+<title>ZEROTRACE · BR Level Up Control Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --primary:#f59e0b;--primary-2:#eab308;--accent:#22d3ee;--accent-2:#a855f7;
+  --ok:#10b981;--danger:#ef4444;--bg:#030014;
+  --card:rgba(20,20,28,.72);--card-2:rgba(10,10,18,.85);
+  --line:rgba(255,255,255,.09);--line-2:rgba(255,255,255,.15);
+  --text:#e2e8f0;--muted:#94a3b8;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{overflow-x:hidden}
+body{
+  font-family:'Space Grotesk',sans-serif;background-color:var(--bg);color:var(--text);
+  min-height:100vh;position:relative;
+  background-image:
+    radial-gradient(circle at 15% 20%,rgba(34,211,238,.15),transparent 45%),
+    radial-gradient(circle at 85% 15%,rgba(168,85,247,.12),transparent 45%),
+    radial-gradient(circle at 50% 85%,rgba(245,158,11,.12),transparent 50%),
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:100% 100%,100% 100%,100% 100%,22px 22px,22px 22px;
+  background-attachment:fixed;
+}
+body::before,body::after{content:"";position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;opacity:.5}
+body::before{width:450px;height:450px;background:radial-gradient(circle,#22d3ee,transparent 70%);top:-140px;left:-140px;animation:float1 16s ease-in-out infinite}
+body::after{width:500px;height:500px;background:radial-gradient(circle,#a855f7,transparent 70%);bottom:-180px;right:-160px;animation:float2 18s ease-in-out infinite}
+@keyframes float1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(70px,50px) scale(1.15)}}
+@keyframes float2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-80px,-60px) scale(1.2)}}
+a{text-decoration:none;color:inherit}
+button,input,textarea,select{font:inherit;color:inherit}
+.site{max-width:1280px;margin:0 auto;padding:20px;position:relative;z-index:2}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 20px;background:linear-gradient(135deg,rgba(20,20,28,.85),rgba(10,10,18,.9));backdrop-filter:blur(20px);border:1px solid var(--line);border-radius:16px;margin-bottom:24px;box-shadow:0 10px 40px rgba(0,0,0,.4);position:sticky;top:14px;z-index:100}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-mark{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--accent));display:grid;place-items:center;font-family:'Rajdhani',sans-serif;font-weight:900;font-size:20px;color:#fff;box-shadow:0 0 22px rgba(245,158,11,.4)}
+.brand-text b{display:block;font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;letter-spacing:.5px}
+.brand-text span{display:block;font-size:9px;letter-spacing:2px;color:var(--muted);margin-top:2px}
+.nav{display:flex;gap:8px;align-items:center}
+.nav a{padding:9px 14px;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted);transition:all .2s;cursor:pointer}
+.nav a:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav a.active{color:var(--primary);background:rgba(245,158,11,.1)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:12px;border:none;font-weight:700;font-size:13px;letter-spacing:.5px;cursor:pointer;transition:all .2s ease;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;box-shadow:0 8px 24px -4px rgba(245,158,11,.45)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px -4px rgba(245,158,11,.6)}
+.btn-ghost{background:rgba(255,255,255,.04);border:1px solid var(--line-2);color:var(--text)}
+.btn-ghost:hover{background:rgba(255,255,255,.08);border-color:var(--primary)}
+.btn-sm{padding:9px 14px;font-size:12px;border-radius:10px}
+.btn-full{width:100%}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none!important}
+
+/* CARDS */
+.cyber-card{background:linear-gradient(135deg,var(--card),var(--card-2));backdrop-filter:blur(28px) saturate(140%);border:1px solid var(--line);border-radius:18px;padding:24px;position:relative;overflow:hidden;box-shadow:0 20px 50px -12px rgba(0,0,0,.6);margin-bottom:20px}
+.cyber-card::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(34,211,238,.5),rgba(245,158,11,.5),rgba(168,85,247,.5),transparent);opacity:.7}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:20px}
+.stat{background:linear-gradient(135deg,rgba(20,20,28,.75),rgba(10,10,18,.85));border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;transition:transform .25s,border-color .25s}
+.stat:hover{transform:translateY(-3px);border-color:rgba(245,158,11,.4)}
+.stat-icon{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:20px}
+.stat-icon.amber{background:rgba(245,158,11,.15);color:var(--primary)}
+.stat-icon.cyan{background:rgba(34,211,238,.15);color:var(--accent)}
+.stat-icon.purple{background:rgba(168,85,247,.15);color:var(--accent-2)}
+.stat-icon.green{background:rgba(16,185,129,.15);color:var(--ok)}
+.stat-icon.red{background:rgba(239,68,68,.15);color:var(--danger)}
+.stat-info h3{font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:#fff;line-height:1;letter-spacing:-.5px}
+.stat-info p{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-top:5px;font-weight:600}
+
+/* ACCOUNTS GRID */
+.acc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+.acc-card{background:linear-gradient(160deg,rgba(20,20,28,.85),rgba(10,10,18,.9));border:1px solid var(--line);border-radius:16px;padding:20px;transition:all .25s ease;position:relative;overflow:hidden}
+.acc-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--ok);transition:background .3s}
+.acc-card[data-status="IN_MATCH"]::before{background:var(--accent);box-shadow:0 0 20px var(--accent)}
+.acc-card[data-status="ERROR"]::before{background:var(--danger)}
+.acc-card[data-status="STOPPED"]::before{background:var(--primary)}
+.acc-card[data-status="OFFLINE"]::before{background:#64748b}
+.acc-card[data-status="CONNECTING"]::before{background:var(--accent)}
+.acc-card[data-status="SEARCHING"]::before{background:var(--accent-2)}
+.acc-card[data-status="PAUSED"]::before{background:#fbbf24}
+.acc-card:hover{transform:translateY(-3px);border-color:rgba(245,158,11,.3);box-shadow:0 20px 50px -12px rgba(0,0,0,.7)}
+.acc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px}
+.acc-profile{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+.acc-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#0f0f1a,#1a1a2e);border:2px solid var(--primary);display:grid;place-items:center;font-family:'Rajdhani',sans-serif;font-weight:900;font-size:18px;color:var(--primary);flex-shrink:0;box-shadow:0 0 16px rgba(245,158,11,.3)}
+.acc-meta{min-width:0;flex:1}
+.acc-meta h4{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px;flex-wrap:wrap;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.3px}
+.acc-meta span{display:block;font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.region-badge{background:rgba(34,211,238,.15);color:var(--accent);padding:2px 8px;border-radius:6px;font-size:9px;font-weight:800;letter-spacing:1px;border:1px solid rgba(34,211,238,.3);text-transform:uppercase}
+.mode-badge{background:rgba(245,158,11,.15);color:var(--primary);padding:2px 8px;border-radius:6px;font-size:9px;font-weight:800;letter-spacing:1px;border:1px solid rgba(245,158,11,.35);text-transform:uppercase}
+
+/* STATUS */
+.acc-status-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.acc-status{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.acc-status.online{background:rgba(16,185,129,.12);color:var(--ok);border:1px solid rgba(16,185,129,.35)}
+.acc-status.match{background:rgba(34,211,238,.12);color:var(--accent);border:1px solid rgba(34,211,238,.35)}
+.acc-status.error{background:rgba(239,68,68,.12);color:var(--danger);border:1px solid rgba(239,68,68,.35)}
+.acc-status.stopped{background:rgba(245,158,11,.12);color:var(--primary);border:1px solid rgba(245,158,11,.35)}
+.acc-status.offline{background:rgba(100,116,139,.12);color:#94a3b8;border:1px solid rgba(100,116,139,.35)}
+.acc-status.connecting{background:rgba(34,211,238,.12);color:var(--accent);border:1px solid rgba(34,211,238,.35)}
+.acc-status.searching{background:rgba(168,85,247,.12);color:var(--accent-2);border:1px solid rgba(168,85,247,.35)}
+.acc-status.paused{background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.4)}
+.dot-live{width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ADDED AGO + UPTIME */
+.added-ago{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:5px;padding:3px 8px;background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.15);border-radius:8px}
+.added-ago i{font-size:9px;color:var(--accent)}
+.added-ago b{color:var(--accent);font-weight:700}
+.acc-uptime{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:4px;padding:3px 8px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:8px}
+.acc-uptime i{font-size:9px;color:var(--primary)}
+.acc-uptime b{color:var(--primary);font-weight:700}
+
+/* EXP GRID */
+.exp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.exp-cell{background:linear-gradient(135deg,rgba(255,255,255,.04),rgba(255,255,255,.01));border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px 14px;position:relative;transition:border-color .2s,background .2s}
+.exp-cell:hover{border-color:rgba(34,211,238,.3);background:linear-gradient(135deg,rgba(34,211,238,.05),rgba(255,255,255,.01))}
+.exp-cell small{display:block;font-size:9px;letter-spacing:1.8px;color:var(--muted);text-transform:uppercase;font-weight:800;margin-bottom:6px}
+.exp-cell b{display:block;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:#fff;line-height:1}
+.exp-gain{color:var(--ok)!important}
+.level-gain{color:var(--accent)!important}
+
+/* PROGRESS BAR */
+.progress-wrap{margin:12px 0;padding:10px 12px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.04);border-radius:12px}
+.progress-header{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:700;margin-bottom:8px}
+.progress-header .lvl-tag{color:var(--text);display:flex;align-items:center;gap:6px}
+.progress-header .needed-badge{background:rgba(245,158,11,.14);color:#ffc107;border:1px solid rgba(245,158,11,.32);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;display:flex;align-items:center;gap:4px;box-shadow:0 0 10px rgba(245,158,11,.18);animation:badgePulse 2.4s infinite ease-in-out}
+@keyframes badgePulse{0%,100%{transform:scale(1);opacity:.95}50%{transform:scale(1.02);opacity:1;box-shadow:0 0 14px rgba(245,158,11,.38)}}
+.progress-track{height:9px;background:rgba(0,0,0,.5);border-radius:12px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.08);box-shadow:inset 0 2px 4px rgba(0,0,0,.6)}
+.progress-fill{height:100%;background:linear-gradient(90deg,#ff8c00 0%,#ffc107 25%,#ffd54f 50%,#ff8c00 75%,#ff3040 100%);background-size:200% 100%;border-radius:12px;transition:width .8s cubic-bezier(0.34,1.56,0.64,1);animation:progressGlowShift 3s infinite linear;position:relative;box-shadow:0 0 14px rgba(255,193,7,.48),0 0 22px rgba(255,48,64,.18)}
+.progress-fill::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.65) 50%,transparent 100%);background-size:200% 100%;animation:shimmerSweep 2.2s infinite linear;border-radius:12px;pointer-events:none}
+.progress-fill::after{content:'';position:absolute;top:0;right:0;bottom:0;width:6px;background:#ffffff;border-radius:50%;box-shadow:0 0 8px #ffffff,0 0 14px #ffc107}
+@keyframes progressGlowShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes shimmerSweep{0%{transform:translateX(-150%)}100%{transform:translateX(150%)}}
+.progress-sub{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--muted);margin-top:6px;font-weight:500}
+.progress-sub .pct-pill{color:var(--accent);font-weight:700;font-size:10px;background:rgba(34,211,238,.10);padding:1px 6px;border-radius:8px;border:1px solid rgba(34,211,238,.24)}
+
+/* ACTIONS */
+.acc-actions{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-top:12px}
+.btn-start,.btn-stop,.btn-delete,.btn-refresh-acc,.btn-pause-acc{padding:10px 8px;border-radius:10px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;transition:all .2s ease;display:flex;align-items:center;justify-content:center;gap:5px;border:1px solid;white-space:nowrap}
+.btn-start{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.4);color:var(--ok)}
+.btn-start:hover:not(:disabled){background:rgba(16,185,129,.22);box-shadow:0 0 20px rgba(16,185,129,.25);transform:translateY(-1px)}
+.btn-stop{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.4);color:var(--primary)}
+.btn-stop:hover:not(:disabled){background:rgba(245,158,11,.22);box-shadow:0 0 20px rgba(245,158,11,.25);transform:translateY(-1px)}
+.btn-delete{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.4);color:var(--danger)}
+.btn-delete:hover{background:rgba(239,68,68,.22);box-shadow:0 0 20px rgba(239,68,68,.25);transform:translateY(-1px)}
+.btn-refresh-acc{background:rgba(34,211,238,.1);border-color:rgba(34,211,238,.4);color:var(--accent)}
+.btn-refresh-acc:hover:not(:disabled){background:rgba(34,211,238,.22);box-shadow:0 0 20px rgba(34,211,238,.25);transform:translateY(-1px)}
+.btn-pause-acc{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.4);color:#fbbf24}
+.btn-pause-acc:hover{background:rgba(251,191,36,.22);box-shadow:0 0 20px rgba(251,191,36,.25);transform:translateY(-1px)}
+.btn-pause-acc.resume{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.4);color:var(--ok)}
+.btn-pause-acc.resume:hover{background:rgba(16,185,129,.22);box-shadow:0 0 20px rgba(16,185,129,.25)}
+.btn-start:disabled,.btn-stop:disabled,.btn-refresh-acc:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-start i,.btn-stop i,.btn-delete i,.btn-refresh-acc i,.btn-pause-acc i{font-size:10px}
+
+/* FIELDS */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
+.input,textarea.input,select.input{width:100%;background:rgba(0,0,0,.45);border:1px solid var(--line-2);color:#fff;font-family:'JetBrains Mono',monospace;border-radius:12px;padding:13px 16px;font-size:13px;outline:none;transition:all .25s ease}
+.input:focus{border-color:var(--primary);box-shadow:0 0 20px rgba(245,158,11,.2);background:rgba(0,0,0,.6)}
+.input::placeholder{color:#475569}
+textarea.input{resize:vertical;min-height:120px;line-height:1.6}
+
+/* CLEARABLE INPUT */
+.input-clear-wrap{position:relative}
+.input-clear-wrap .input{padding-right:42px}
+.input-clear-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:8px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:var(--danger);cursor:pointer;display:grid;place-items:center;font-size:12px;transition:all .2s;padding:0}
+.input-clear-btn:hover{background:rgba(239,68,68,.25);border-color:var(--danger);color:#fff;transform:translateY(-50%) scale(1.08)}
+.input-clear-btn:active{transform:translateY(-50%) scale(0.94)}
+
+/* TABS */
+.tab-group{display:flex;gap:8px;margin-bottom:18px;background:rgba(0,0,0,.3);padding:6px;border-radius:12px}
+.tab-btn{flex:1;padding:11px;border-radius:9px;border:none;background:transparent;color:var(--muted);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;cursor:pointer;transition:all .25s;text-transform:uppercase}
+.tab-btn:hover{color:#fff;background:rgba(255,255,255,.04)}
+.tab-btn.active{background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(245,158,11,.08));color:var(--primary);border:1px solid rgba(245,158,11,.4);box-shadow:0 0 20px rgba(245,158,11,.15)}
+.tab-panel{display:none}
+.tab-panel.active{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:20px;z-index:500}
+.modal.active{display:flex;animation:fadeIn .25s}
+.modal-card{background:linear-gradient(135deg,rgba(20,20,28,.98),rgba(10,10,18,1));border:1px solid var(--line-2);border-radius:22px;padding:28px;width:100%;max-width:520px;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.7);max-height:90vh;overflow-y:auto}
+.modal-close{position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid var(--line-2);color:var(--muted);cursor:pointer;display:grid;place-items:center;font-size:18px;transition:all .2s}
+.modal-close:hover{color:var(--danger);border-color:var(--danger);background:rgba(239,68,68,.1)}
+.modal-title{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.modal-sub{font-size:12px;color:var(--muted);margin-bottom:22px}
+
+/* ALERTS */
+.alert{padding:12px 16px;border-radius:12px;font-size:13px;margin-bottom:16px;border:1px solid;display:flex;gap:10px;align-items:flex-start}
+.alert.success{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.3);color:#6ee7b7}
+.alert.error{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:#fca5a5}
+.alert.warning{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3);color:#fcd34d}
+.alert.info{background:rgba(34,211,238,.1);border-color:rgba(34,211,238,.3);color:#67e8f9}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:grid;place-items:center;padding:20px;position:relative;z-index:2}
+.login-card{width:100%;max-width:420px;background:linear-gradient(135deg,rgba(20,20,28,.95),rgba(10,10,18,.98));border:1px solid var(--line-2);border-radius:24px;padding:36px;box-shadow:0 30px 80px rgba(0,0,0,.7);position:relative;overflow:hidden}
+.login-card::before{content:"";position:absolute;top:-80px;right:-80px;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,.2),transparent 70%);pointer-events:none}
+.login-logo{width:72px;height:72px;border-radius:20px;margin:0 auto 20px;background:linear-gradient(135deg,var(--primary),var(--accent-2));display:grid;place-items:center;font-family:'Rajdhani',sans-serif;font-size:32px;font-weight:900;color:#fff;box-shadow:0 0 40px rgba(245,158,11,.4);position:relative}
+.login-card h1{font-family:'Rajdhani',sans-serif;font-size:32px;font-weight:700;text-align:center;color:#fff;letter-spacing:1px;margin-bottom:6px}
+.login-card .sub{text-align:center;font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:28px}
+
+/* EMPTY */
+.empty{padding:50px 20px;text-align:center;color:var(--muted);border:1px dashed var(--line-2);border-radius:16px}
+.empty i{font-size:42px;opacity:.3;margin-bottom:14px;display:block}
+.empty h3{color:#fff;font-size:16px;margin-bottom:6px}
+.empty p{font-size:13px}
+
+/* SUPPORT FLOAT */
+.support-float{position:fixed;right:22px;bottom:22px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent-2));color:#fff;display:grid;place-items:center;font-size:22px;box-shadow:0 10px 30px rgba(245,158,11,.4);z-index:200;transition:transform .25s}
+.support-float:hover{transform:translateY(-4px) scale(1.05)}
+
+/* SLOT BAR */
+.slot-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(245,158,11,.02));border:1px solid rgba(245,158,11,.25);border-radius:12px;margin-bottom:16px;font-size:12px;font-weight:700}
+.slot-bar i{color:var(--primary)}
+.slot-bar span{color:var(--text);font-family:'JetBrains Mono',monospace}
+.slot-bar .slot-num{color:var(--primary)}
+
+/* VERIFY OVERLAY */
+.verify-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;padding:20px;z-index:999}
+.verify-overlay.active{display:flex;animation:fadeIn .25s}
+.verify-box{background:linear-gradient(135deg,rgba(20,20,28,.98),rgba(10,10,18,1));border:1px solid rgba(245,158,11,.35);border-radius:24px;padding:36px 28px;width:100%;max-width:400px;text-align:center;box-shadow:0 30px 90px rgba(245,158,11,.15);position:relative;overflow:hidden}
+.verify-ring{width:90px;height:90px;margin:0 auto 22px;position:relative}
+.verify-ring::before{content:"";position:absolute;inset:0;border-radius:50%;border:3px solid rgba(245,158,11,.15)}
+.verify-ring::after{content:"";position:absolute;inset:0;border-radius:50%;border:3px solid transparent;border-top-color:var(--primary);border-right-color:var(--accent);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.verify-ring i{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:30px;color:var(--primary)}
+.verify-title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:8px}
+.verify-sub{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:18px}
+.verify-progress{height:4px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;margin-bottom:14px}
+.verify-progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:4px;width:0;transition:width .4s ease}
+.verify-steps{text-align:left;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.verify-steps .step{display:flex;align-items:center;gap:8px;opacity:.4;transition:opacity .3s}
+.verify-steps .step.active{opacity:1;color:var(--primary)}
+.verify-steps .step.done{opacity:1;color:var(--ok)}
+.verify-steps .step i{font-size:10px;width:14px}
+
+/* BULK OVERLAY */
+.bulk-results{max-height:200px;overflow-y:auto;margin-top:14px;text-align:left;font-size:11px;font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:10px}
+.bulk-results::-webkit-scrollbar{width:6px}
+.bulk-results::-webkit-scrollbar-track{background:rgba(0,0,0,.2);border-radius:3px}
+.bulk-results::-webkit-scrollbar-thumb{background:rgba(245,158,11,.4);border-radius:3px}
+.bulk-results::-webkit-scrollbar-thumb:hover{background:rgba(245,158,11,.6)}
+.bulk-row{padding:3px 0;display:flex;align-items:center;gap:6px;line-height:1.4}
+.bulk-row.ok{color:var(--ok)}
+.bulk-row.fail{color:var(--danger)}
+.bulk-row.skip{color:var(--primary)}
+.bulk-stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+.bulk-stat-box{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px;text-align:center}
+.bulk-stat-box .n{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800;line-height:1}
+.bulk-stat-box .l{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-top:4px;font-weight:700}
+.bulk-stat-box.ok .n{color:var(--ok)}
+.bulk-stat-box.fail .n{color:var(--danger)}
+.bulk-stat-box.skip .n{color:var(--primary)}
+
+/* TOAST */
+.toast-wrap{position:fixed;top:20px;right:20px;z-index:1000;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.toast{background:linear-gradient(135deg,rgba(20,20,28,.98),rgba(10,10,18,.98));border:1px solid var(--line-2);border-radius:12px;padding:14px 18px;min-width:260px;max-width:360px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 20px 50px rgba(0,0,0,.6);animation:toastIn .3s ease;pointer-events:auto}
+.toast.removing{animation:toastOut .3s ease forwards}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateX(40px)}}
+.toast.success{border-left:3px solid var(--ok)}
+.toast.error{border-left:3px solid var(--danger)}
+.toast.info{border-left:3px solid var(--accent)}
+.toast.warning{border-left:3px solid var(--primary)}
+.toast i{font-size:18px;margin-top:2px}
+.toast.success i{color:var(--ok)}
+.toast.error i{color:var(--danger)}
+.toast.info i{color:var(--accent)}
+.toast.warning i{color:var(--primary)}
+.toast-content{flex:1;min-width:0}
+.toast-title{font-weight:700;font-size:13px;color:#fff;margin-bottom:3px}
+.toast-msg{font-size:12px;color:var(--muted);line-height:1.4;word-break:break-word}
+.toast-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 4px;transition:color .2s}
+.toast-close:hover{color:var(--danger)}
+
+/* LOADING */
+.loading-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:998}
+.loading-overlay.active{display:flex}
+.loading-box{background:linear-gradient(135deg,rgba(20,20,28,.98),rgba(10,10,18,1));border:1px solid rgba(34,211,238,.35);border-radius:20px;padding:32px 40px;text-align:center;box-shadow:0 30px 80px rgba(34,211,238,.15)}
+.loading-spinner{width:60px;height:60px;margin:0 auto 18px;border:3px solid rgba(34,211,238,.15);border-top-color:var(--accent);border-right-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
+.loading-title{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:6px}
+.loading-sub{font-size:12px;color:var(--muted)}
+
+/* ADMIN USER CARD */
+.user-card{background:linear-gradient(160deg,rgba(20,20,28,.85),rgba(10,10,18,.9));border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:12px}
+
+/* RESPONSIVE */
+@media (max-width:720px){
+  .site{padding:14px}
+  .topbar{padding:12px 14px;flex-wrap:wrap;gap:10px}
+  .nav{display:none}
+  .brand-text b{font-size:14px}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .acc-grid{grid-template-columns:1fr}
+  .login-card{padding:28px 22px}
+  .modal-card{padding:22px}
+  .acc-actions{grid-template-columns:1fr 1fr}
+  .toast-wrap{top:14px;right:14px;left:14px}
+  .toast{min-width:0;max-width:none}
+}
+@media (max-width:480px){
+  .stats-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== LOGIN PAGE ==================== -->
+<div class="login-wrap" id="loginPage" style="display:none">
+  <div class="login-card">
+    <div class="login-logo">Z</div>
+    <h1>ZEROTRACE</h1>
+    <div class="sub">BR Level Up Control Panel</div>
+    <div id="loginAlert"></div>
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="field">
+        <label><i class="fas fa-user"></i> Username</label>
+        <input type="text" class="input" id="loginUser" placeholder="Enter username" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label><i class="fas fa-lock"></i> Password</label>
+        <input type="password" class="input" id="loginPass" placeholder="Enter password" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
+        <i class="fas fa-sign-in-alt"></i> SIGN IN
+      </button>
+    </form>
+    <div style="text-align:center;margin-top:20px;font-size:11px;color:var(--muted)">
+      <i class="fas fa-shield-alt" style="color:var(--ok)"></i> Secure login · Contact admin for access
+    </div>
+  </div>
+</div>
+
+<!-- ==================== APP PAGE ==================== -->
+<div class="site" id="appPage" style="display:none">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">Z</div>
+      <div class="brand-text">
+        <b>ZEROTRACE</b>
+        <span id="userGreeting">WELCOME</span>
+      </div>
+    </div>
+    <nav class="nav">
+      <a id="navDashboard" class="active" onclick="showTab('dashboard')"><i class="fas fa-home"></i> Dashboard</a>
+      <a id="navProfile" onclick="showTab('profile')"><i class="fas fa-user"></i> Profile</a>
+      <a id="navAdmin" onclick="showTab('admin')" style="display:none"><i class="fas fa-crown"></i> Admin</a>
+    </nav>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" id="globalRefreshBtn" onclick="handleGlobalRefresh()" title="Refresh all accounts">
+        <i class="fas fa-rotate"></i> Refresh All
+      </button>
+      <button class="btn btn-ghost btn-sm" id="globalPauseBtn" onclick="togglePauseAll()" title="Pause/Resume all accounts">
+        <i class="fas fa-pause"></i> Pause All
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="fetchStats()" title="Reload page data">
+        <i class="fas fa-sync"></i>
+      </button>
+      <button class="btn btn-primary btn-sm" onclick="openModal('addAccountModal')">
+        <i class="fas fa-plus"></i> Add Account
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="handleLogout()" title="Logout">
+        <i class="fas fa-sign-out-alt"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== DASHBOARD TAB ==================== -->
+  <div id="tab-dashboard" class="tab-panel active">
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-icon amber"><i class="fas fa-users"></i></div>
+        <div class="stat-info"><h3 id="statTotal">0</h3><p>Total Accounts</p></div>
+      </div>
+      <div class="stat">
+        <div class="stat-icon green"><i class="fas fa-arrow-up"></i></div>
+        <div class="stat-info"><h3 id="statExp">+0</h3><p>EXP Gained</p></div>
+      </div>
+      <div class="stat">
+        <div class="stat-icon cyan"><i class="fas fa-gamepad"></i></div>
+        <div class="stat-info"><h3 id="statMatches">0</h3><p>Matches</p></div>
+      </div>
+      <div class="stat">
+        <div class="stat-icon red"><i class="fas fa-hourglass-half"></i></div>
+        <div class="stat-info"><h3 id="statExpiry">-</h3><p>Expiry (Hours)</p></div>
+      </div>
+    </div>
+
+    <div class="cyber-card">
+      <div id="slotBar" class="slot-bar" style="display:none">
+        <i class="fas fa-layer-group"></i>
+        <span>SLOTS USED: <span class="slot-num" id="slotUsed">0</span> / <span class="slot-num" id="slotMax">0</span></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+        <h2 style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#fff;letter-spacing:1px">
+          <i class="fas fa-crosshairs" style="color:var(--primary)"></i> BATTLE ROYALE ACCOUNTS
+        </h2>
+        <span style="font-size:11px;color:var(--muted)">Auto-refresh every 3s</span>
+      </div>
+      <div class="acc-grid" id="accountsContainer">
+        <div class="empty">
+          <i class="fas fa-circle-notch fa-spin"></i>
+          <h3>Loading accounts...</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PROFILE TAB ==================== -->
+  <div id="tab-profile" class="tab-panel">
+    <div class="cyber-card">
+      <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+        <div style="width:80px;height:80px;border-radius:20px;background:linear-gradient(135deg,var(--primary),var(--accent-2));display:grid;place-items:center;font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:900;color:#fff;box-shadow:0 0 40px rgba(245,158,11,.3)">
+          <span id="profileAvatarLetter">U</span>
+        </div>
+        <div style="flex:1;min-width:200px">
+          <h2 style="font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;color:#fff;letter-spacing:1px" id="profileName">User</h2>
+          <p style="font-size:13px;color:var(--muted)" id="profileRole">User Account</p>
+        </div>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-icon amber"><i class="fas fa-layer-group"></i></div>
+        <div class="stat-info"><h3 id="profileSlots">0</h3><p>Max Slots</p></div>
+      </div>
+      <div class="stat">
+        <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+        <div class="stat-info"><h3 id="profileActive">0</h3><p>Active Jobs</p></div>
+      </div>
+      <div class="stat">
+        <div class="stat-icon red"><i class="fas fa-hourglass-half"></i></div>
+        <div class="stat-info"><h3 id="profileExpiryHours">-</h3><p>Expiry (Hours)</p></div>
+      </div>
+      <div class="stat">
+        <div class="stat-icon cyan"><i class="fas fa-calendar"></i></div>
+        <div class="stat-info"><h3 id="profileExpiryDate">-</h3><p>Expires On</p></div>
+      </div>
+    </div>
+    <div class="cyber-card">
+      <h2 style="font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:16px">
+        <i class="fas fa-key" style="color:var(--primary)"></i> CHANGE PASSWORD
+      </h2>
+      <div id="passAlert"></div>
+      <form onsubmit="handleChangePass(event)">
+        <div class="field">
+          <label>Current Password</label>
+          <input type="password" class="input" id="oldPass" required>
+        </div>
+        <div class="field">
+          <label>New Password</label>
+          <input type="password" class="input" id="newPass" required minlength="6">
+        </div>
+        <div class="field">
+          <label>Confirm New Password</label>
+          <input type="password" class="input" id="confirmPass" required minlength="6">
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-save"></i> UPDATE PASSWORD
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== ADMIN TAB ==================== -->
+  <div id="tab-admin" class="tab-panel">
+    <div class="cyber-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+        <h2 style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#fff;letter-spacing:1px">
+          <i class="fas fa-users-cog" style="color:var(--primary)"></i> USER MANAGEMENT
+        </h2>
+        <button class="btn btn-primary btn-sm" onclick="openModal('addUserModal')">
+          <i class="fas fa-user-plus"></i> Create User
+        </button>
+      </div>
+      <div id="usersContainer">
+        <div class="empty">
+          <i class="fas fa-circle-notch fa-spin"></i>
+          <h3>Loading users...</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ==================== ADD ACCOUNT MODAL ==================== -->
+<div class="modal" id="addAccountModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal('addAccountModal')"><i class="fas fa-times"></i></button>
+    <div class="modal-title">
+      <i class="fas fa-user-plus" style="color:var(--primary)"></i> Add Free Fire Account
+    </div>
+    <div class="modal-sub">Account will be verified (Level 3+ required)</div>
+    <div class="tab-group">
+      <button type="button" class="tab-btn active" onclick="switchAccTab('guest')" id="accTabGuest">UID + Pass</button>
+      <button type="button" class="tab-btn" onclick="switchAccTab('token')" id="accTabToken">Token</button>
+      <button type="button" class="tab-btn" onclick="switchAccTab('bulk')" id="accTabBulk">Bulk Add</button>
+    </div>
+    <div id="accAlert"></div>
+    <form onsubmit="handleAddAccount(event)">
+      <div id="accGuestFields">
+        <div class="field">
+          <label><i class="fas fa-id-badge"></i> Guest UID</label>
+          <div class="input-clear-wrap">
+            <input type="text" class="input" id="accUid" placeholder="e.g. 7644913583">
+            <button type="button" class="input-clear-btn" onclick="clearField('accUid')" title="Clear">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <div class="field">
+          <label><i class="fas fa-lock"></i> Password</label>
+          <div class="input-clear-wrap">
+            <input type="text" class="input" id="accPass" placeholder="Guest password">
+            <button type="button" class="input-clear-btn" onclick="clearField('accPass')" title="Clear">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="accTokenFields" style="display:none">
+        <div class="field">
+          <label><i class="fas fa-key"></i> Access Token</label>
+          <div class="input-clear-wrap">
+            <textarea class="input" id="accToken" rows="4" placeholder="Paste access token here..."></textarea>
+            <button type="button" class="input-clear-btn" onclick="clearField('accToken')" title="Clear" style="top:14px;transform:none">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="accBulkFields" style="display:none">
+        <div class="field">
+          <label><i class="fas fa-layer-group"></i> Bulk Accounts (one per line)</label>
+          <div class="input-clear-wrap">
+            <textarea class="input" id="accBulkData" rows="10"
+              placeholder="Format: uid:password&#10;&#10;4345872008:ZERO_IND_RCNAU_BY_ZEROTRACE_PREMIUM_ACCOUNT_GENRATOR_730PY&#10;4345872183:ZERO_IND_2TX6Y_BY_ZEROTRACE_PREMIUM_ACCOUNT_GENRATOR_V23RY&#10;4345872172:ZERO_IND_JYC5P_BY_ZEROTRACE_PREMIUM_ACCOUNT_GENRATOR_3GVF0&#10;&#10;Or paste JSON array:&#10;[{&quot;uid&quot;:&quot;...&quot;,&quot;password&quot;:&quot;...&quot;}, ...]"></textarea>
+            <button type="button" class="input-clear-btn" onclick="clearField('accBulkData')" title="Clear" style="top:14px;transform:none">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6">
+          <i class="fas fa-info-circle" style="color:var(--accent)"></i>
+          <b>Max 500 accounts</b> per request. Supported formats:<br>
+          • <code style="color:var(--primary)">uid:password</code> (one per line)<br>
+          • JSON array <code style="color:var(--primary)">[{"uid":"...","password":"..."}]</code>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button type="button" class="btn btn-ghost btn-full" onclick="closeModal('addAccountModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-full" id="addAccBtn">
+          <i class="fas fa-plus"></i> <span id="addAccBtnText">Add &amp; Verify</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ==================== ADD USER MODAL ==================== -->
+<div class="modal" id="addUserModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal('addUserModal')"><i class="fas fa-times"></i></button>
+    <div class="modal-title">
+      <i class="fas fa-user-plus" style="color:var(--accent)"></i> Create User
+    </div>
+    <div class="modal-sub">Give dashboard access to a new user</div>
+    <div id="userAlert"></div>
+    <form onsubmit="handleAddUser(event)">
+      <div class="field">
+        <label><i class="fas fa-user"></i> Username</label>
+        <input type="text" class="input" id="newUserName" required>
+      </div>
+      <div class="field">
+        <label><i class="fas fa-lock"></i> Password</label>
+        <input type="text" class="input" id="newUserPass" required minlength="6">
+      </div>
+      <div class="field">
+        <label><i class="fas fa-layer-group"></i> Max Slots</label>
+        <input type="number" class="input" id="newUserSlots" value="1" min="1" max="100">
+      </div>
+      <div class="field">
+        <label><i class="fas fa-calendar"></i> Access Duration (Days)</label>
+        <input type="number" class="input" id="newUserDays" value="30" min="1" max="3650">
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button type="button" class="btn btn-ghost btn-full" onclick="closeModal('addUserModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-full">
+          <i class="fas fa-check"></i> Create
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ==================== VERIFY OVERLAY (SINGLE) ==================== -->
+<div class="verify-overlay" id="verifyOverlay">
+  <div class="verify-box">
+    <div class="verify-ring"><i class="fas fa-user-shield"></i></div>
+    <div class="verify-title">VERIFYING ACCOUNT</div>
+    <div class="verify-sub" id="verifySub">Logging in &amp; checking level...</div>
+    <div class="verify-progress">
+      <div class="verify-progress-fill" id="verifyProgress"></div>
+    </div>
+    <div class="verify-steps" id="verifySteps">
+      <div class="step" id="stepConnect"><i class="fas fa-circle"></i> Connecting to Garena...</div>
+      <div class="step" id="stepLogin"><i class="fas fa-circle"></i> Authenticating...</div>
+      <div class="step" id="stepLevel"><i class="fas fa-circle"></i> Checking level...</div>
+      <div class="step" id="stepSave"><i class="fas fa-circle"></i> Saving account...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== BULK VERIFY OVERLAY ==================== -->
+<div class="verify-overlay" id="bulkVerifyOverlay">
+  <div class="verify-box" style="max-width:540px">
+    <div class="verify-ring"><i class="fas fa-layer-group"></i></div>
+    <div class="verify-title">BULK VERIFYING</div>
+    <div class="verify-sub" id="bulkVerifySub">Processing accounts...</div>
+    <div class="verify-progress">
+      <div class="verify-progress-fill" id="bulkVerifyProgress"></div>
+    </div>
+    <div class="bulk-stat-grid">
+      <div class="bulk-stat-box ok">
+        <div class="n" id="bulkOk">0</div>
+        <div class="l">Success</div>
+      </div>
+      <div class="bulk-stat-box fail">
+        <div class="n" id="bulkFail">0</div>
+        <div class="l">Failed</div>
+      </div>
+      <div class="bulk-stat-box skip">
+        <div class="n" id="bulkSkip">0</div>
+        <div class="l">Skipped</div>
+      </div>
+    </div>
+    <div class="bulk-results" id="bulkVerifyResults">
+      <div style="color:var(--muted);text-align:center;padding:20px">
+        <i class="fas fa-circle-notch fa-spin"></i> Waiting for results...
+      </div>
+    </div>
+    <button class="btn btn-primary btn-full" style="margin-top:16px" onclick="closeBulkOverlay()" id="bulkCloseBtn" disabled>
+      <i class="fas fa-check"></i> Close
+    </button>
+  </div>
+</div>
+
+<!-- ==================== LOADING OVERLAY ==================== -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-box">
+    <div class="loading-spinner"></div>
+    <div class="loading-title" id="loadingTitle">REFRESHING...</div>
+    <div class="loading-sub" id="loadingSub">Please wait</div>
+  </div>
+</div>
+
+<!-- ==================== TOASTS ==================== -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- SUPPORT -->
+<a class="support-float" href="https://t.me/godjexartg" target="_blank" title="Support">
+  <i class="fas fa-headset"></i>
+</a>
+
+<!-- ==================== SCRIPT ==================== -->
+<script>
+let CURRENT_USER = null;
+let ACC_TAB = 'guest';
+let VERIFY_TIMER = null;
+let VERIFY_START = 0;
+let BULK_TIMER = null;
+let cachedAccounts = [];
+
+// ==================== TOAST ====================
+function toast(title, msg, type='info') {
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  let icon = 'fa-info-circle';
+  if (type === 'success') icon = 'fa-check-circle';
+  if (type === 'error') icon = 'fa-times-circle';
+  if (type === 'warning') icon = 'fa-exclamation-triangle';
+  el.innerHTML = `
+    <i class="fas ${icon}"></i>
+    <div class="toast-content">
+      <div class="toast-title">${escapeHtml(title)}</div>
+      <div class="toast-msg">${msg || ''}</div>
+    </div>
+    <button class="toast-close" onclick="removeToast(this)"><i class="fas fa-times"></i></button>
+  `;
+  wrap.appendChild(el);
+  setTimeout(() => removeToastEl(el), 5200);
+}
+function removeToast(btn) {
+  const el = btn.closest('.toast');
+  removeToastEl(el);
+}
+function removeToastEl(el) {
+  if (el && el.parentNode) {
+    el.classList.add('removing');
+    setTimeout(() => { el.remove(); }, 280);
+  }
+}
+
+// ==================== API ====================
+async function api(url, method='GET', body=null) {
+  const opts = {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'same-origin'
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(url, opts);
+  let data;
+  try { data = await res.json(); } catch (e) { data = { error: 'Invalid server response' }; }
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+// ==================== AUTH ====================
+async function checkAuth() {
+  try {
+    const data = await api('/api/auth/me');
+    if (data.authenticated) {
+      CURRENT_USER = data.user;
+      showApp();
+    } else {
+      showLogin();
+    }
+  } catch (e) {
+    showLogin();
+  }
+}
+function showLogin() {
+  document.getElementById('loginPage').style.display = 'grid';
+  document.getElementById('appPage').style.display = 'none';
+}
+function showApp() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('appPage').style.display = 'block';
+  document.getElementById('userGreeting').textContent = 'WELCOME, ' + (CURRENT_USER.username || '').toUpperCase();
+  const isAdmin = CURRENT_USER.role === 'admin';
+  document.getElementById('navAdmin').style.display = isAdmin ? 'inline-flex' : 'none';
+  document.getElementById('profileName').textContent = CURRENT_USER.username || 'User';
+  document.getElementById('profileRole').textContent = isAdmin ? 'Administrator' : 'User Account';
+  document.getElementById('profileAvatarLetter').textContent = (CURRENT_USER.username || 'U')[0].toUpperCase();
+  document.getElementById('profileSlots').textContent = CURRENT_USER.max_slots || 0;
+  document.getElementById('profileActive').textContent = CURRENT_USER.active_jobs || 0;
+  if (CURRENT_USER.expires_at) {
+    const hours = (CURRENT_USER.expires_at - Date.now() / 1000) / 3600;
+    document.getElementById('profileExpiryHours').textContent = Math.max(0, hours).toFixed(1) + 'h';
+    const d = new Date(CURRENT_USER.expires_at * 1000);
+    document.getElementById('profileExpiryDate').textContent = d.toLocaleDateString();
+  } else {
+    document.getElementById('profileExpiryHours').textContent = '∞';
+    document.getElementById('profileExpiryDate').textContent = 'Never';
+  }
+  fetchStats();
+  if (isAdmin) fetchUsers();
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const btn = document.getElementById('loginBtn');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SIGNING IN...';
+  document.getElementById('loginAlert').innerHTML = '';
+  try {
+    const username = document.getElementById('loginUser').value.trim();
+    const password = document.getElementById('loginPass').value;
+    const data = await api('/api/auth/login', 'POST', { username, password });
+    if (data.success) {
+      CURRENT_USER = data.user;
+      toast('Welcome!', 'Login successful', 'success');
+      showApp();
+    } else {
+      document.getElementById('loginAlert').innerHTML =
+        '<div class="alert error"><i class="fas fa-exclamation-triangle"></i><span>' +
+        (data.error || 'Login failed') + '</span></div>';
+    }
+  } catch (err) {
+    document.getElementById('loginAlert').innerHTML =
+      '<div class="alert error"><i class="fas fa-exclamation-triangle"></i><span>' +
+      err.message + '</span></div>';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = orig;
+  }
+}
+
+async function handleLogout() {
+  try { await api('/api/auth/logout', 'POST'); } catch (e) {}
+  CURRENT_USER = null;
+  showLogin();
+  toast('Logged out', 'See you soon', 'info');
+}
+
+async function handleChangePass(e) {
+  e.preventDefault();
+  const oldPass = document.getElementById('oldPass').value;
+  const newPass = document.getElementById('newPass').value;
+  const confirmPass = document.getElementById('confirmPass').value;
+  const alertBox = document.getElementById('passAlert');
+  if (newPass !== confirmPass) {
+    alertBox.innerHTML = '<div class="alert error"><i class="fas fa-times"></i><span>Passwords do not match</span></div>';
+    return;
+  }
+  if (newPass.length < 6) {
+    alertBox.innerHTML = '<div class="alert error"><i class="fas fa-times"></i><span>Password must be at least 6 characters</span></div>';
+    return;
+  }
+  try {
+    await api('/api/auth/change-password', 'POST', { old_password: oldPass, new_password: newPass });
+    alertBox.innerHTML = '<div class="alert success"><i class="fas fa-check"></i><span>Password updated successfully</span></div>';
+    e.target.reset();
+    toast('Success', 'Password changed', 'success');
+  } catch (err) {
+    alertBox.innerHTML = '<div class="alert error"><i class="fas fa-times"></i><span>' + err.message + '</span></div>';
+  }
+}
+
+// ==================== TABS ====================
+function showTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+  const navEl = document.getElementById('nav' + name.charAt(0).toUpperCase() + name.slice(1));
+  if (navEl) navEl.classList.add('active');
+  return false;
+}
+
+// ==================== ADD ACCOUNT MODAL ====================
+function switchAccTab(tab) {
+  ACC_TAB = tab;
+  document.getElementById('accTabGuest').classList.toggle('active', tab === 'guest');
+  document.getElementById('accTabToken').classList.toggle('active', tab === 'token');
+  document.getElementById('accTabBulk').classList.toggle('active', tab === 'bulk');
+  document.getElementById('accGuestFields').style.display = tab === 'guest' ? 'block' : 'none';
+  document.getElementById('accTokenFields').style.display = tab === 'token' ? 'block' : 'none';
+  document.getElementById('accBulkFields').style.display = tab === 'bulk' ? 'block' : 'none';
+  // Update button text
+  const btnText = document.getElementById('addAccBtnText');
+  if (btnText) {
+    if (tab === 'bulk') btnText.textContent = 'Bulk Add & Verify';
+    else btnText.textContent = 'Add & Verify';
+  }
+}
+
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+document.querySelectorAll('.modal').forEach(m => {
+  m.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('active');
+  });
+});
+
+function clearField(fieldId) {
+  const el = document.getElementById(fieldId);
+  if (el) {
+    el.value = '';
+    el.focus();
+  }
+}
+
+// ==================== SINGLE VERIFY FLOW ====================
+function showLoading(title, sub) {
+  document.getElementById('loadingTitle').textContent = title || 'LOADING...';
+  document.getElementById('loadingSub').textContent = sub || 'Please wait';
+  document.getElementById('loadingOverlay').classList.add('active');
+}
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.remove('active');
+}
+
+function showVerifyOverlay() {
+  document.getElementById('verifyOverlay').classList.add('active');
+  ['stepConnect', 'stepLogin', 'stepLevel', 'stepSave'].forEach(id => {
+    const el = document.getElementById(id);
+    el.className = 'step';
+    el.querySelector('i').className = 'fas fa-circle';
+  });
+  const first = document.getElementById('stepConnect');
+  first.className = 'step active';
+  first.querySelector('i').className = 'fas fa-circle-notch fa-spin';
+  document.getElementById('verifySub').textContent = 'Connecting to Garena...';
+  const p = document.getElementById('verifyProgress');
+  p.style.width = '5%';
+  setTimeout(() => { p.style.width = '30%'; }, 500);
+}
+function setVerifyStep(id, active) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.className = 'step ' + (active ? 'active' : 'done');
+  el.querySelector('i').className = active ? 'fas fa-circle-notch fa-spin' : 'fas fa-check-circle';
+}
+function hideVerifyOverlay() {
+  document.getElementById('verifyOverlay').classList.remove('active');
+}
+
+async function handleAddAccount(e) {
+  e.preventDefault();
+  if (ACC_TAB === 'bulk') {
+    return handleBulkAdd(e);
+  }
+  const btn = document.getElementById('addAccBtn');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+  const alertBox = document.getElementById('accAlert');
+  alertBox.innerHTML = '';
+  try {
+    let payload = {};
+    if (ACC_TAB === 'guest') {
+      const uid = document.getElementById('accUid').value.trim();
+      const pass = document.getElementById('accPass').value.trim();
+      if (!uid || !pass) throw new Error('UID and Password required');
+      payload = { uid, password: pass };
+    } else {
+      const token = document.getElementById('accToken').value.trim();
+      if (!token) throw new Error('Token required');
+      payload = { token };
+    }
+    closeModal('addAccountModal');
+    showVerifyOverlay();
+    const data = await api('/api/account/add', 'POST', payload);
+    if (data.status !== 'verifying') throw new Error(data.error || 'Verification failed');
+    pollVerifyStatus(data.verify_id);
+  } catch (err) {
+    hideVerifyOverlay();
+    alertBox.innerHTML = '<div class="alert error"><i class="fas fa-times"></i><span>' + err.message + '</span></div>';
+    openModal('addAccountModal');
+    toast('Error', err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = orig;
+  }
+}
+
+async function pollVerifyStatus(verifyId) {
+  VERIFY_START = Date.now();
+  const deadline = Date.now() + 60000;
+  if (VERIFY_TIMER) clearInterval(VERIFY_TIMER);
+  VERIFY_TIMER = setInterval(async () => {
+    if (Date.now() > deadline) {
+      clearInterval(VERIFY_TIMER);
+      hideVerifyOverlay();
+      document.getElementById('accAlert').innerHTML =
+        '<div class="alert error"><i class="fas fa-clock"></i><span>Verification timeout. Please try again.</span></div>';
+      openModal('addAccountModal');
+      document.getElementById('addAccBtn').disabled = false;
+      return;
+    }
+    try {
+      const data = await api('/api/account/verify-status?verify_id=' + encodeURIComponent(verifyId));
+      if (data.status === 'verifying') {
+        const elapsed = Date.now() - VERIFY_START;
+        if (elapsed > 2000) {
+          setVerifyStep('stepConnect', false);
+          setVerifyStep('stepLogin', true);
+          document.getElementById('verifyProgress').style.width = '45%';
+        }
+        if (elapsed > 6000) {
+          setVerifyStep('stepLogin', false);
+          setVerifyStep('stepLevel', true);
+          document.getElementById('verifyProgress').style.width = '65%';
+        }
+        if (elapsed > 10000) {
+          setVerifyStep('stepLevel', false);
+          setVerifyStep('stepSave', true);
+          document.getElementById('verifyProgress').style.width = '85%';
+        }
+      } else if (data.status === 'success') {
+        clearInterval(VERIFY_TIMER);
+        VERIFY_TIMER = null;
+        setVerifyStep('stepConnect', false);
+        setVerifyStep('stepLogin', false);
+        setVerifyStep('stepLevel', false);
+        setVerifyStep('stepSave', false);
+        document.getElementById('verifyProgress').style.width = '100%';
+        document.getElementById('verifySub').innerHTML =
+          '<span style="color:var(--ok);font-weight:700">✅ Verified!</span><br>' +
+          (data.account?.nickname || 'Account') + ' (Lv' + (data.account?.level || '?') + ')<br>Starting...';
+        toast('Account Verified', 'Lv' + (data.account?.level || '?') + ' added', 'success');
+        document.getElementById('accUid').value = '';
+        document.getElementById('accPass').value = '';
+        document.getElementById('accToken').value = '';
+        setTimeout(() => {
+          hideVerifyOverlay();
+          fetchStats();
+          document.getElementById('addAccBtn').disabled = false;
+        }, 1500);
+      } else if (data.status === 'failed') {
+        clearInterval(VERIFY_TIMER);
+        VERIFY_TIMER = null;
+        hideVerifyOverlay();
+        document.getElementById('accAlert').innerHTML =
+          '<div class="alert error"><i class="fas fa-times"></i><span>' +
+          (data.error || 'Verification failed') + '</span></div>';
+        openModal('addAccountModal');
+        document.getElementById('addAccBtn').disabled = false;
+        toast('Verify Failed', data.error || 'Unknown error', 'error');
+      }
+    } catch (err) {
+      console.error('Poll error:', err);
+    }
+  }, 1500);
+}
+
+// ==================== BULK ADD FLOW ====================
+function parseBulkInput(text) {
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+  const accounts = [];
+  const seen = new Set();
+
+  // Try JSON array first
+  if (text.trim().startsWith('[')) {
+    try {
+      const arr = JSON.parse(text);
+      if (Array.isArray(arr)) {
+        arr.forEach(item => {
+          if (item.uid && item.password) {
+            const uid = String(item.uid).trim();
+            if (!seen.has(uid)) {
+              seen.add(uid);
+              accounts.push({ uid, password: String(item.password).trim() });
+            }
+          }
+        });
+        return accounts;
+      }
+    } catch (e) {}
+  }
+
+  // Try newline-separated JSON objects
+  if (lines.some(l => l.startsWith('{'))) {
+    lines.forEach(line => {
+      try {
+        const obj = JSON.parse(line.replace(/,$/, ''));
+        if (obj.uid && obj.password) {
+          const uid = String(obj.uid).trim();
+          if (!seen.has(uid)) {
+            seen.add(uid);
+            accounts.push({ uid, password: String(obj.password).trim() });
+          }
+        }
+      } catch (e) {}
+    });
+    if (accounts.length) return accounts;
+  }
+
+  // Fallback: uid:password per line
+  lines.forEach(line => {
+    const idx = line.indexOf(':');
+    if (idx > 0) {
+      const uid = line.slice(0, idx).trim();
+      const pwd = line.slice(idx + 1).trim();
+      if (uid && pwd && !seen.has(uid)) {
+        seen.add(uid);
+        accounts.push({ uid, password: pwd });
+      }
+    }
+  });
+  return accounts;
+}
+
+async function handleBulkAdd(e) {
+  e.preventDefault();
+  const btn = document.getElementById('addAccBtn');
+  const orig = btn.innerHTML;
+  const alertBox = document.getElementById('accAlert');
+  alertBox.innerHTML = '';
+
+  const raw = document.getElementById('accBulkData').value || '';
+  const accounts = parseBulkInput(raw);
+  if (!accounts.length) {
+    alertBox.innerHTML = '<div class="alert error"><i class="fas fa-times"></i><span>No valid accounts found. Use <b>uid:password</b> per line.</span></div>';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying ' + accounts.length + '...';
+
+  try {
+    closeModal('addAccountModal');
+    showBulkOverlay(accounts.length);
+
+    const data = await api('/api/account/bulk-add', 'POST', { accounts });
+    if (data.status !== 'verifying') throw new Error(data.error || 'Bulk verify failed');
+
+    pollBulkStatus(data.bulk_id, accounts.length);
+  } catch (err) {
+    hideBulkOverlay();
+    alertBox.innerHTML = '<div class="alert error"><i class="fas fa-times"></i><span>' + err.message + '</span></div>';
+    openModal('addAccountModal');
+    toast('Bulk Failed', err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = orig;
+  }
+}
+
+function showBulkOverlay(total) {
+  document.getElementById('bulkVerifyOverlay').classList.add('active');
+  document.getElementById('bulkVerifySub').textContent = `Verifying ${total} accounts...`;
+  document.getElementById('bulkOk').textContent = '0';
+  document.getElementById('bulkFail').textContent = '0';
+  document.getElementById('bulkSkip').textContent = '0';
+  document.getElementById('bulkVerifyProgress').style.width = '0%';
+  document.getElementById('bulkVerifyResults').innerHTML =
+    '<div style="color:var(--muted);text-align:center;padding:20px"><i class="fas fa-circle-notch fa-spin"></i> Waiting for results...</div>';
+  document.getElementById('bulkCloseBtn').disabled = true;
+}
+
+function hideBulkOverlay() {
+  document.getElementById('bulkVerifyOverlay').classList.remove('active');
+}
+
+function closeBulkOverlay() {
+  if (BULK_TIMER) { clearInterval(BULK_TIMER); BULK_TIMER = null; }
+  hideBulkOverlay();
+  fetchStats();
+}
+
+function pollBulkStatus(bulkId, total) {
+  if (BULK_TIMER) clearInterval(BULK_TIMER);
+  BULK_TIMER = setInterval(async () => {
+    try {
+      const data = await api('/api/account/bulk-verify-status?bulk_id=' + encodeURIComponent(bulkId));
+      const done = (data.success_count || 0) + (data.failed_count || 0) + (data.skipped_count || 0);
+      const pct = total > 0 ? Math.min(100, (done / total) * 100) : 0;
+      document.getElementById('bulkVerifyProgress').style.width = pct + '%';
+      document.getElementById('bulkOk').textContent = data.success_count || 0;
+      document.getElementById('bulkFail').textContent = data.failed_count || 0;
+      document.getElementById('bulkSkip').textContent = data.skipped_count || 0;
+      document.getElementById('bulkVerifySub').textContent = `Verifying... ${done}/${total} (${pct.toFixed(0)}%)`;
+
+      const results = data.results || [];
+      if (results.length) {
+        const rows = results.map(r => {
+          let cls = 'skip';
+          let icon = '→';
+          if (r.status === 'success') { cls = 'ok'; icon = '✓'; }
+          else if (r.status === 'failed') { cls = 'fail'; icon = '✗'; }
+          const detail = r.status === 'success'
+            ? `${escapeHtml(r.account?.nickname || '')} Lv${r.account?.level || '?'}`
+            : escapeHtml(r.error || r.status);
+          return `<div class="bulk-row ${cls}"><span>${icon}</span><span style="opacity:.7">${escapeHtml(r.uid)}</span><span>— ${detail}</span></div>`;
+        }).join('');
+        const container = document.getElementById('bulkVerifyResults');
+        container.innerHTML = rows;
+        container.scrollTop = container.scrollHeight;
+      }
+
+      if (data.status === 'done') {
+        clearInterval(BULK_TIMER);
+        BULK_TIMER = null;
+        document.getElementById('bulkVerifySub').innerHTML =
+          `<span style="color:var(--ok);font-weight:700">✅ Bulk Complete!</span>`;
+        document.getElementById('bulkCloseBtn').disabled = false;
+        document.getElementById('accBulkData').value = '';
+        toast('Bulk Add Complete',
+          `${data.success_count} added, ${data.failed_count} failed, ${data.skipped_count} skipped`,
+          data.success_count > 0 ? 'success' : 'warning');
+        fetchStats();
+      }
+    } catch (err) {
+      console.error('Bulk poll error:', err);
+    }
+  }, 1500);
+}
+
+// ==================== ACCOUNT ACTIONS ====================
+async function deleteAccount(uid, authUid) {
+  if (!confirm('Delete this account? This will stop the bot.')) return;
+  try {
+    await api('/api/account/delete', 'POST', { uid: uid, auth_uid: authUid || '' });
+    toast('Deleted', 'Account removed', 'success');
+    fetchStats();
+  } catch (e) {
+    toast('Delete Failed', e.message, 'error');
+  }
+}
+async function startAccount(uid) {
+  if (!confirm('Start this account?')) return;
+  try {
+    await api('/api/account/start', 'POST', { uid });
+    toast('Started', 'Account starting...', 'success');
+    fetchStats();
+  } catch (e) {
+    toast('Start Failed', e.message, 'error');
+  }
+}
+async function stopAccount(uid) {
+  if (!confirm('Stop this account?')) return;
+  try {
+    await api('/api/account/stop', 'POST', { uid });
+    toast('Stopped', 'Account stopped', 'info');
+    fetchStats();
+  } catch (e) {
+    toast('Stop Failed', e.message, 'error');
+  }
+}
+async function togglePauseAccount(uid) {
+  try {
+    const data = await api('/api/account/pause', 'POST', { uid });
+    if (data.status === 'ok') {
+      toast(data.is_paused ? 'Paused' : 'Resumed',
+            data.is_paused ? 'Matchmaking paused' : 'Matchmaking resumed',
+            data.is_paused ? 'warning' : 'success');
+      fetchStats();
+    }
+  } catch (e) {
+    toast('Pause Failed', e.message, 'error');
+  }
+}
+async function togglePauseAll() {
+  const btn = document.getElementById('globalPauseBtn');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ...';
+  try {
+    const data = await api('/api/account/pause_all', 'POST');
+    if (data.status === 'ok') {
+      toast(data.all_paused ? 'All Paused' : 'All Resumed',
+            data.all_paused ? 'Matchmaking paused for all' : 'Matchmaking resumed for all',
+            data.all_paused ? 'warning' : 'success');
+      fetchStats();
+    }
+  } catch (e) {
+    toast('Pause All Failed', e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = orig;
+  }
+}
+
+// ==================== REFRESH ====================
+async function refreshOneAccount(uid) {
+  const btn = document.querySelector('button[data-refresh-uid="' + uid + '"]');
+  if (btn) {
+    if (btn.disabled) return;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ...';
+  }
+
+  const oldAcc = cachedAccounts.find(a => String(a.uid) === String(uid));
+  const oldExp = oldAcc ? (oldAcc.current_exp || 0) : 0;
+  const oldLevel = oldAcc ? (oldAcc.level || 1) : 1;
+
+  try {
+    const data = await api('/api/account/refresh', 'POST', { uid });
+    if (data.status === 'ok') {
+      await fetchStats();
+      const newAcc = cachedAccounts.find(a => String(a.uid) === String(uid));
+      if (newAcc) {
+        const newExp = newAcc.current_exp || 0;
+        const newLevel = newAcc.level || 1;
+        const expDelta = newExp - oldExp;
+        const levelDelta = newLevel - oldLevel;
+        if (expDelta > 0 || levelDelta > 0) {
+          let msg = '';
+          if (expDelta > 0) msg += `+${expDelta.toLocaleString()} EXP`;
+          if (levelDelta > 0) msg += (msg ? ' • ' : '') + `🎉 LEVEL UP → L${newLevel}`;
+          toast(levelDelta > 0 ? 'Level Up!' : 'EXP Gained', msg, levelDelta > 0 ? 'success' : 'info');
+        } else {
+          toast('Refreshed', `Lv ${newLevel} • ${newExp.toLocaleString()} EXP (no change)`, 'info');
+        }
+      } else {
+        toast('Refreshed', 'Profile updated', 'success');
+      }
+    } else {
+      toast('Refresh Failed', data.error || 'Unknown error', 'error');
+    }
+  } catch (e) {
+    toast('Refresh Failed', e.message, 'error');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-rotate"></i> Refresh';
+    }
+  }
+}
+
+async function handleGlobalRefresh() {
+  const btn = document.getElementById('globalRefreshBtn');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+  showLoading('REFRESHING ALL ACCOUNTS', 'Please wait, this may take a moment');
+
+  const oldSnapshot = {};
+  cachedAccounts.forEach(a => {
+    oldSnapshot[String(a.uid)] = {
+      exp: a.current_exp || 0,
+      level: a.level || 1,
+    };
+  });
+
+  try {
+    const data = await api('/api/account/refresh-all', 'POST');
+    if (data.status === 'ok') {
+      await fetchStats();
+      let totalExpGained = 0;
+      let totalLevelGained = 0;
+      cachedAccounts.forEach(a => {
+        const uid = String(a.uid);
+        const old = oldSnapshot[uid];
+        if (old) {
+          const expDelta = (a.current_exp || 0) - old.exp;
+          const levelDelta = (a.level || 1) - old.level;
+          if (expDelta > 0) totalExpGained += expDelta;
+          if (levelDelta > 0) totalLevelGained += levelDelta;
+        }
+      });
+      let msg = `${data.success || 0} updated, ${data.failed || 0} failed`;
+      if (totalExpGained > 0) msg += ` • +${totalExpGained.toLocaleString()} EXP`;
+      if (totalLevelGained > 0) msg += ` • +${totalLevelGained} Lv`;
+      toast('Global Refresh Complete', msg, 'success');
+    } else {
+      toast('Refresh Failed', data.error || 'Unknown error', 'error');
+    }
+  } catch (e) {
+    toast('Refresh Failed', e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = orig;
+    hideLoading();
+  }
+}
+
+// ==================== ADMIN USER ACTIONS ====================
+async function handleAddUser(e) {
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type=submit]');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+  const alertBox = document.getElementById('userAlert');
+  alertBox.innerHTML = '';
+  try {
+    const payload = {
+      username: document.getElementById('newUserName').value.trim(),
+      password: document.getElementById('newUserPass').value,
+      max_slots: parseInt(document.getElementById('newUserSlots').value),
+      duration_days: parseInt(document.getElementById('newUserDays').value)
+    };
+    await api('/api/admin/user/create', 'POST', payload);
+    alertBox.innerHTML = '<div class="alert success"><i class="fas fa-check"></i><span>User created</span></div>';
+    toast('User Created', payload.username, 'success');
+    e.target.reset();
+    setTimeout(() => { closeModal('addUserModal'); fetchUsers(); }, 800);
+  } catch (err) {
+    alertBox.innerHTML = '<div class="alert error"><i class="fas fa-times"></i><span>' + err.message + '</span></div>';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = orig;
+  }
+}
+async function deleteUser(username) {
+  if (!confirm('Delete user "' + username + '"?')) return;
+  try {
+    await api('/api/admin/user/delete', 'POST', { username });
+    toast('User Deleted', username, 'success');
+    fetchUsers();
+  } catch (e) {
+    toast('Delete Failed', e.message, 'error');
+  }
+}
+async function extendUser(username) {
+  const days = prompt('Extend by how many days?', '30');
+  if (!days || isNaN(days)) return;
+  try {
+    await api('/api/admin/user/extend', 'POST', { username, days: parseInt(days) });
+    toast('Extended', username + ' by ' + days + ' days', 'success');
+    fetchUsers();
+  } catch (e) {
+    toast('Extend Failed', e.message, 'error');
+  }
+}
+async function resetUserPass(username) {
+  const newPass = prompt('New password for "' + username + '":');
+  if (!newPass || newPass.length < 6) {
+    alert('Password must be at least 6 chars');
+    return;
+  }
+  try {
+    await api('/api/admin/user/reset-password', 'POST', { username, new_password: newPass });
+    toast('Password Reset', username, 'success');
+  } catch (e) {
+    toast('Reset Failed', e.message, 'error');
+  }
+}
+async function setUserSlots(username, currentSlots) {
+  const newSlots = prompt('Set max slots for "' + username + '":', currentSlots || 1);
+  if (!newSlots || isNaN(newSlots)) return;
+  try {
+    await api('/api/admin/user/set-slots', 'POST', { username, max_slots: parseInt(newSlots) });
+    toast('Slots Updated', username + ' → ' + newSlots, 'success');
+    fetchUsers();
+  } catch (e) {
+    toast('Update Failed', e.message, 'error');
+  }
+}
+
+// ==================== TIME ====================
+function timeAgo(t) {
+  if (!t || t === 'Unknown' || t === 'Never') return 'unknown';
+  let ms;
+  if (typeof t === 'number') ms = t;
+  else {
+    try { ms = new Date(t.replace(' ', 'T')).getTime() / 1000; } catch (e) { return 'unknown'; }
+  }
+  if (isNaN(ms)) return 'unknown';
+  const sec = Math.floor(Date.now() / 1000 - ms);
+  if (sec < 60) return sec + 's ago';
+  if (sec < 3600) return Math.floor(sec / 60) + 'm ago';
+  if (sec < 86400) return Math.floor(sec / 3600) + 'h ago';
+  return Math.floor(sec / 86400) + 'd ago';
+}
+function formatDuration(sec) {
+  sec = Math.max(0, Math.floor(sec || 0));
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = sec % 60;
+  if (h > 0) return h + 'h ' + String(m).padStart(2, '0') + 'm';
+  return String(m).padStart(2, '0') + 'm ' + String(s).padStart(2, '0') + 's';
+}
+
+// ==================== FETCH STATS ====================
+async function fetchStats() {
+  try {
+    const data = await api('/api/stats');
+    document.getElementById('statTotal').textContent = data.total_accounts || 0;
+    document.getElementById('statExp').textContent = '+' + (data.total_gained_exp || 0).toLocaleString();
+    document.getElementById('statMatches').textContent = data.total_matches || 0;
+    const expiryVal = (data.expiry_hours != null) ? data.expiry_hours + 'h' : '∞';
+    document.getElementById('statExpiry').textContent = expiryVal;
+
+    if (CURRENT_USER && CURRENT_USER.role !== 'admin') {
+      document.getElementById('slotBar').style.display = 'flex';
+      document.getElementById('slotUsed').textContent = data.used_slots || 0;
+      document.getElementById('slotMax').textContent = data.max_slots || 0;
+    } else {
+      document.getElementById('slotBar').style.display = 'none';
+    }
+
+    const accounts = data.accounts || [];
+    const allPaused = accounts.length > 0 && accounts.every(a => a.is_paused || a.status === 'PAUSED');
+    const pauseBtn = document.getElementById('globalPauseBtn');
+    if (pauseBtn) {
+      if (allPaused) {
+        pauseBtn.innerHTML = '<i class="fas fa-play"></i> Resume All';
+      } else {
+        pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause All';
+      }
+    }
+
+    const container = document.getElementById('accountsContainer');
+    if (!accounts.length) {
+      container.innerHTML = `
+        <div class="empty">
+          <i class="fas fa-ghost"></i>
+          <h3>No accounts running</h3>
+          <p>Click "Add Account" to start</p>
+        </div>
+      `;
+    } else {
+      container.innerHTML = accounts.map(a => renderAccountCard(a)).join('');
+    }
+    cachedAccounts = accounts;
+  } catch (e) {
+    console.error('fetchStats:', e);
+  }
+}
+
+function renderAccountCard(a) {
+  const gainedExp = a.gained_exp || 0;
+  const isPaused = a.is_paused || a.status === 'PAUSED';
+  const status = isPaused ? 'PAUSED' : (a.status || 'ONLINE');
+  let statusClass = 'online';
+  if (isPaused) statusClass = 'paused';
+  else if (status === 'IN_MATCH') statusClass = 'match';
+  else if (status === 'ERROR') statusClass = 'error';
+  else if (status === 'STOPPED') statusClass = 'stopped';
+  else if (status === 'OFFLINE') statusClass = 'offline';
+  else if (status === 'CONNECTING') statusClass = 'connecting';
+  else if (status === 'SEARCHING') statusClass = 'searching';
+
+  const statusText = isPaused
+    ? 'PAUSED'
+    : (status === 'IN_MATCH' ? 'IN MATCH (' + (a.active_matches || 1) + ')' : status);
+
+  const nick = escapeHtml(a.nickname || 'Unknown');
+  const uid = escapeHtml(a.uid || '');
+  const authUid = escapeHtml(a.auth_uid || '');
+  const region = escapeHtml(a.region || 'BD');
+  const level = a.level || 1;
+  const nextLevel = a.next_level || (level + 1);
+  const currentExp = (a.current_exp || 0).toLocaleString();
+  const gainedExpFmt = gainedExp.toLocaleString();
+  const remainingExp = (a.remaining_exp || 0).toLocaleString();
+  const progressPct = (a.progress_pct || 0).toFixed(1);
+  const matches = a.matches_played || 0;
+  const levelGained = a.level_gained || 0;
+  const addedAgo = timeAgo(a.added_at);
+  const uptimeSec = Math.floor(a.uptime_seconds || 0);
+
+  const isRunning = !isPaused && (status === 'ONLINE' || status === 'IN_MATCH' || status === 'CONNECTING' || status === 'SEARCHING');
+  const isStopped = status === 'STOPPED' || status === 'OFFLINE' || status === 'ERROR';
+
+  return `
+    <div class="acc-card" data-status="${isPaused ? 'PAUSED' : (a.status || 'ONLINE')}">
+      <div class="acc-head">
+        <div class="acc-profile">
+          <div class="acc-avatar">Z</div>
+          <div class="acc-meta">
+            <h4>${nick}
+              <span class="region-badge">${region}</span>
+              <span class="mode-badge"><i class="fas fa-crosshairs"></i> BR</span>
+            </h4>
+            <span>${uid}</span>
+          </div>
+        </div>
+        <div class="acc-status-wrap">
+          <div class="acc-status ${statusClass}">
+            <span class="dot-live"></span> ${statusText}
+          </div>
+          <div class="added-ago">
+            <i class="fas fa-clock"></i> Added <b>${addedAgo}</b>
+          </div>
+          <div class="acc-uptime">
+            <i class="fas fa-stopwatch"></i> <b>${formatDuration(uptimeSec)}</b>
+          </div>
+        </div>
+      </div>
+
+      <div class="exp-grid">
+        <div class="exp-cell"><small>EXP</small><b>${currentExp}</b></div>
+        <div class="exp-cell"><small>GAINED</small><b class="exp-gain">+${gainedExpFmt}</b></div>
+        <div class="exp-cell"><small>LEVEL</small><b>${level}</b></div>
+        <div class="exp-cell"><small>LVL GAINED</small><b class="level-gain">+${levelGained}</b></div>
+        <div class="exp-cell" style="grid-column:1/-1">
+          <small>MATCHES PLAYED</small>
+          <b>${matches}</b>
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-header">
+          <span class="lvl-tag">
+            <i class="fas fa-angles-up" style="color:var(--accent)"></i>
+            Level ${level} → <strong style="color:var(--primary)">L${nextLevel}</strong>
+          </span>
+          <span class="needed-badge">
+            <i class="fas fa-bolt"></i> ${remainingExp} EXP needed
+          </span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width:${progressPct}%"></div>
+        </div>
+        <div class="progress-sub">
+          <span>${progressPct}% complete</span>
+          <span class="pct-pill">${progressPct}%</span>
+        </div>
+      </div>
+
+      <div class="acc-actions">
+        <button class="btn-pause-acc ${isPaused ? 'resume' : ''}"
+                onclick="togglePauseAccount('${uid}')"
+                title="${isPaused ? 'Resume' : 'Pause'}">
+          <i class="fas ${isPaused ? 'fa-play' : 'fa-pause'}"></i> ${isPaused ? 'Resume' : 'Pause'}
+        </button>
+        <button class="btn-refresh-acc" data-refresh-uid="${uid}"
+                onclick="refreshOneAccount('${uid}')">
+          <i class="fas fa-rotate"></i> Refresh
+        </button>
+        <button class="btn-start" onclick="startAccount('${uid}')" ${isRunning ? 'disabled' : ''}>
+          <i class="fas fa-play"></i> Start
+        </button>
+        <button class="btn-stop" onclick="stopAccount('${uid}')" ${isStopped ? 'disabled' : ''}>
+          <i class="fas fa-stop"></i> Stop
+        </button>
+        <button class="btn-delete" style="grid-column:1/-1" onclick="deleteAccount('${uid}', '${authUid}')">
+          <i class="fas fa-trash"></i> Delete Account
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// ==================== FETCH USERS (ADMIN) ====================
+async function fetchUsers() {
+  try {
+    const data = await api('/api/admin/users');
+    const container = document.getElementById('usersContainer');
+    if (!data.users || !data.users.length) {
+      container.innerHTML = '<div class="empty"><i class="fas fa-users"></i><h3>No users yet</h3></div>';
+      return;
+    }
+    container.innerHTML = data.users.map(u => renderUserCard(u)).join('');
+  } catch (e) {
+    console.error('fetchUsers:', e);
+  }
+}
+
+function renderUserCard(u) {
+  const expiryDate = u.expires_at ? new Date(u.expires_at * 1000).toLocaleDateString() : 'Never';
+  const isExpired = u.expires_at && (u.expires_at * 1000 < Date.now());
+  const expiryHrs = (u.expiry_hours != null) ? u.expiry_hours + 'h' : '∞';
+  const roleBadge = u.role === 'admin'
+    ? '<span class="region-badge" style="background:rgba(245,158,11,.15);color:var(--primary);border-color:rgba(245,158,11,.3)">ADMIN</span>'
+    : '';
+  const actions = u.role !== 'admin' ? `
+    <div class="acc-actions">
+      <button class="btn-stop" onclick="extendUser('${escapeHtml(u.username)}')"><i class="fas fa-calendar-plus"></i> Extend</button>
+      <button class="btn-start" onclick="resetUserPass('${escapeHtml(u.username)}')"><i class="fas fa-key"></i> Reset</button>
+      <button class="btn-refresh-acc" onclick="setUserSlots('${escapeHtml(u.username)}', ${u.max_slots || 1})"><i class="fas fa-layer-group"></i> Slots</button>
+      <button class="btn-delete" onclick="deleteUser('${escapeHtml(u.username)}')"><i class="fas fa-trash"></i> Delete</button>
+    </div>
+  ` : '';
+
+  return `
+    <div class="user-card">
+      <div class="acc-head">
+        <div class="acc-profile">
+          <div class="acc-avatar" style="background:linear-gradient(135deg,var(--accent),var(--accent-2));border-color:var(--accent);color:#fff">
+            ${escapeHtml((u.username || 'U')[0].toUpperCase())}
+          </div>
+          <div class="acc-meta">
+            <h4>${escapeHtml(u.username)} ${roleBadge}</h4>
+            <span>${u.max_slots || 0} slots · ${u.active_jobs || 0} active</span>
+          </div>
+        </div>
+        <div class="acc-status ${isExpired ? 'error' : 'online'}">
+          <span class="dot-live"></span> ${isExpired ? 'EXPIRED' : 'ACTIVE'}
+        </div>
+      </div>
+      <div class="exp-grid">
+        <div class="exp-cell"><small>SLOTS</small><b>${u.max_slots || 0}</b></div>
+        <div class="exp-cell"><small>EXPIRY</small><b style="font-size:14px">${expiryHrs}</b></div>
+        <div class="exp-cell" style="grid-column:1/-1">
+          <small>EXPIRES ON</small><b style="font-size:13px">${expiryDate}</b>
+        </div>
+      </div>
+      ${actions}
+    </div>
+  `;
+}
+
+// ==================== UTIL ====================
+function escapeHtml(t) {
+  if (!t) return '';
+  return String(t)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ==================== INIT ====================
+checkAuth();
+setInterval(() => { if (CURRENT_USER) fetchStats(); }, 3000);
+</script>
+</body>
+</html>
