@@ -1,0 +1,38 @@
+# ═══════════════════════════════════════════════════════════════
+# STAR GAMER Bot — Requirements
+# For: Main.py + cs.py + dashboard_server.py
+# ═══════════════════════════════════════════════════════════════
+
+# ── Async HTTP (cs.py) ──
+aiohttp
+
+# ── Sync + Async HTTP (Main.py + cs.py) ──
+httpx
+requests
+
+# ── SSL warnings (cs.py) ──
+urllib3
+
+# ── AES Encryption (Crypto.Cipher.AES) ──
+pycryptodome
+
+# ── Protobuf (Pb2 files) ──
+protobuf==7.36.2
+protobuf-decoder
+
+# ── JWT (cs.py) ──
+PyJWT
+
+# ── FreeFire version fetch (Main.py) ──
+google-play-scraper
+
+# ── System utilities (cs.py) ──
+psutil
+pytz
+
+# ── Console banner (cs.py) ──
+cfonts
+
+# ── Web Dashboard ──
+flask
+flask-cors
